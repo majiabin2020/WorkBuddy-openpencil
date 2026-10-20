@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile, access, constants } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { ensureRuntime } from '../plugins/openpencil/scripts/runtime-install.mjs';
@@ -24,9 +24,14 @@ if (Number(process.versions.node.split('.')[0]) < 22) throw new Error('OpenPenci
 
 const runtime = await ensureRuntime();
 await mkdir(dirname(filePath), { recursive: true, mode: 0o700 });
-await writeFile(filePath, JSON.stringify({ version: '0.8.5', children: [
-  { type: 'frame', id: 'demo-root', name: 'WorkBuddy OpenPencil demo', width: 420, height: 320, children: [] },
-] }));
+// Never clobber an existing document: the seed skeleton is only for a fresh file.
+let existed = true;
+try { await access(filePath, constants.F_OK); } catch { existed = false; }
+if (!existed) {
+  await writeFile(filePath, JSON.stringify({ version: '0.8.5', children: [
+    { type: 'frame', id: 'demo-root', name: 'WorkBuddy OpenPencil demo', width: 420, height: 320, children: [] },
+  ] }));
+}
 
 const canvas = new CanvasController({ runtimeRoot: runtime.root });
 const opened = await canvas.open({ filePath });
