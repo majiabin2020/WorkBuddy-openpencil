@@ -1,5 +1,14 @@
 # Architecture and scope
 
+> **WorkBuddy adaptation note:** this repository is a fork of
+> `ZSeven-W/codex-openpencil` targeting the WorkBuddy desktop client. The
+> engine, bridge and canvas contracts below are unchanged. Host-specific
+> differences: setup registers `workbuddy_openpencil` into WorkBuddy's
+> `~/.workbuddy/mcp.json` (merge-only) instead of the Codex plugin marketplace;
+> activation requires the user to trust the custom connector; canvas URLs are
+> presented through WorkBuddy's built-in browser preview; image generation uses
+> the host's built-in image model. State lives in `~/.workbuddy-openpencil/`.
+
 ```text
 Codex plugin host -> Node.js stdio bridge -> one serialized controller
   before either canvas opener -> instance-verified existing Rust MCP editor

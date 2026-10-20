@@ -36,7 +36,7 @@ export async function atomicSave(path, bytes, baseline) {
     return sha256(bytes);
   }
   if (sha256(await sourceBytes(path)) !== baseline) throw new Error('Source changed outside this canvas. Save was stopped; keep the recovery draft.');
-  const temp = join(dirname(path), `.${basename(path)}.codex-${randomUUID()}.tmp`);
+  const temp = join(dirname(path), `.${basename(path)}.wb-${randomUUID()}.tmp`);
   try {
     await writeFile(temp, bytes, { flag: 'wx', mode: 0o600 });
     // Check again after staging, before replacing the source.

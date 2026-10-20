@@ -80,14 +80,14 @@ const panelMessage = (app,url,data,origin = new URL(url).origin,source = app.fra
 test('Explicit Code action uses capability-gated ui/message once and waits for acknowledgment', async () => {
   const app = await createUiHarness('app');
   await initializeApp(app,'light',{serverTools:{},message:{text:{}}}); const url = await openPanel(app);
-  const value = {type:'codex-canvas/codegen',requestId:'job-1',prompt:'Implement this captured design'};
+  const value = {type:'wb-canvas/codegen',requestId:'job-1',prompt:'Implement this captured design'};
   panelMessage(app,url,value,'https://foreign.example'); panelMessage(app,url,value,undefined,{});
   assert.ok(!app.hostMessages.some(item=>item.data.method==='ui/message'));
   panelMessage(app,url,value); panelMessage(app,url,value);
   const sent = app.hostMessages.filter(item=>item.data.method==='ui/message');
   assert.equal(sent.length,1); assert.equal(sent[0].data.params.role,'user');
   assert.equal(sent[0].data.params.content[0].text,value.prompt);
-  assert.ok(!app.frameMessages.some(item=>item.data.type==='codex-canvas/codegen-result'));
+  assert.ok(!app.frameMessages.some(item=>item.data.type==='wb-canvas/codegen-result'));
   app.host({jsonrpc:'2.0',id:sent[0].data.id,result:{}}); await settle();
   assert.equal(app.frameMessages.at(-1).data.status,'accepted');
 });
@@ -96,7 +96,7 @@ test('Unsupported and failed hosts never claim conversion completion or retry a 
   for (const supported of [false,true]) {
     const app = await createUiHarness('app');
     await initializeApp(app,'light',{serverTools:{},...(supported?{message:{text:{}}}:{})}); const url = await openPanel(app);
-    const value = {type:'codex-canvas/codegen',requestId:'job-1',prompt:'Convert'};
+    const value = {type:'wb-canvas/codegen',requestId:'job-1',prompt:'Convert'};
     panelMessage(app,url,value); await settle();
     if (supported) {
       const sent = app.hostMessages.find(item=>item.data.method==='ui/message').data;
@@ -127,12 +127,12 @@ test('Panel flushes first, shows baseline, polls final source, and ignores late 
   assert.equal(ui.rpcCalls.length,1);
   assert.equal(JSON.parse(ui.rpcCalls[0].options.body).name,'canvas_codegen_prepare');
   assert.equal(ui.editorMessages.at(-1).code,'<main>Baseline</main>');
-  assert.equal(ui.hostMessages.at(-1).data.type,'codex-canvas/codegen');
+  assert.equal(ui.hostMessages.at(-1).data.type,'wb-canvas/codegen');
   ui.rpc(()=>({requestId:'job-1',uiRequestId:'host-123-1',status:'complete',revision:2,code:'<main>Tested</main>'}));
   await ui.state('refreshCodegen()');
   assert.equal(ui.editorMessages.at(-1).code,'<main>Tested</main>');
   const count = ui.editorMessages.length;
-  ui.host({type:'codex-canvas/codegen-result',requestId:'job-1',status:'accepted'});
+  ui.host({type:'wb-canvas/codegen-result',requestId:'job-1',status:'accepted'});
   assert.equal(ui.editorMessages.length,count);
   ui.editor({type:'op-bridge/codegen-request',requestId:'host-123-1',framework:'html',nodeIds:['card']}); await settle();
   assert.equal(ui.rpcCalls.length,2);
@@ -141,7 +141,7 @@ test('Panel flushes first, shows baseline, polls final source, and ignores late 
 test('Top-level browser returns usable source and an honest chat continuation, without a host submission', async () => {
   const ui = await readyCodePanel(false); await generate(ui);
   assert.ok(ui.editorMessages.at(-1).notice.includes('继续转代码'));
-  assert.ok(!ui.hostMessages.some(item=>item.data.type==='codex-canvas/codegen'));
+  assert.ok(!ui.hostMessages.some(item=>item.data.type==='wb-canvas/codegen'));
   const before = ui.rpcCalls.length;
   ui.editor({type:'op-bridge/codegen-request',requestId:'host-123-2',framework:'html',nodeIds:[]},'https://foreign.example');
   await settle(); assert.equal(ui.rpcCalls.length,before);
@@ -153,7 +153,7 @@ test('Cancel during flush sends no implementation prompt and invalidates complet
   const snapshot = ui.editorMessages.find(item=>item.type==='op-bridge/snapshot');
   ui.editor({type:'op-bridge/codegen-cancel',requestId:'host-123-1'});
   ui.editor({type:'op-bridge/snapshot-result',requestId:snapshot.requestId,docJson:'{}'}); await settle();
-  assert.ok(!ui.hostMessages.some(item=>item.data.type==='codex-canvas/codegen'));
+  assert.ok(!ui.hostMessages.some(item=>item.data.type==='wb-canvas/codegen'));
   assert.ok(!ui.rpcCalls.some(item=>JSON.parse(item.options.body).name==='canvas_codegen_prepare'));
   const f = fixture(); const job = await prepareCodegen(f.controller,f.args);
   cancelCodegen(f.controller,{uiRequestId:'other'}); assert.equal(job.status,'prepared');

@@ -1,12 +1,12 @@
 ---
 name: openpencil-design
-description: Create or edit editable .op UI designs with the Codex OpenPencil plugin, including layout inspection, PNG previews, and verified saves. Use for OpenPencil or OP/op design requests such as “用op设计” or “用 OP 修改选中元素”, not generic frontend implementation.
+description: Create or edit editable .op UI designs with the WorkBuddy OpenPencil connector, including layout inspection, PNG previews, and verified saves. Use for OpenPencil or OP/op design requests such as “用op设计” or “用 OP 修改选中元素”, not generic frontend implementation.
 ---
 
 # Design with OpenPencil
 
 Recognize “OP” and “op” as OpenPencil in requests for UI design, canvas edits
-or .op files, including “用op设计一个单页 APP”. Open or reuse this plugin's
+or .op files, including “用op设计一个单页 APP”. Open or reuse this connector's
 conversation canvas; export to code only when the user requests implementation.
 
 Use the connected Rust MCP tools as the source of truth. Start with
@@ -14,14 +14,13 @@ Use the connected Rust MCP tools as the source of truth. Start with
 content and use the user's chosen file, page, selection, and reference.
 For connection failures, see [setup](../openpencil-setup/SKILL.md).
 
-For a requested interactive conversation canvas in Codex, call `canvas_open_browser`
-and open its returned `panelUrl` in the Codex browser panel or the user's existing
-browser. Codex currently blocks local HTTP iframes in MCP Apps. If only
-`open_canvas` is available, use its returned URL the same way. Pass the
-chosen existing file, or omit the path for a new document. Verify `canvas_status`
-and `get_editor_state`. All native tools then edit that managed canvas. Show the
-UI resource or local panel URL. Do not open a new managed document just to inspect
-the user's existing desktop selection.
+For an interactive conversation canvas in WorkBuddy, call `canvas_open_browser`
+and present its returned `panelUrl` through the WorkBuddy built-in browser
+preview so the user sees the live canvas. If only `open_canvas` is available,
+use its returned URL the same way. Pass the chosen existing file, or omit the
+path for a new document. Verify `canvas_status` and `get_editor_state`. All
+native tools then edit that managed canvas. Do not open a new managed document
+just to inspect the user's existing desktop selection.
 
 ## Establish the output
 
@@ -42,24 +41,30 @@ hand-draw a replacement or use emoji for system indicators.
 ## Image acquisition
 
 For new photos, illustrations or product imagery needed by the design, use the
-host's available built-in `image_gen` by default, following its imagegen skill
-when available. Preserve suitable user-provided/existing images and keep native
-text, controls and vector artwork editable. Before generation, send a brief chat
-progress update describing the intended assets and noting that generation may
-consume Codex image-generation quota. Continue without a separate per-call
-permission question; respect the host's own required approvals. Do not invent a
-credit balance, price or refund guarantee.
+host's built-in image generation (the WorkBuddy image generation tool). Write
+image-generation prompts in concise Chinese, tailored to the slot's content.
+Preserve suitable user-provided/existing images and keep native text, controls
+and vector artwork editable. Before generating, send a brief chat progress
+update describing the intended assets and noting that generation consumes
+WorkBuddy credits. Continue without a separate per-call permission question;
+respect the host's own required approvals. Do not invent a credit balance,
+price or refund guarantee.
 
-Honor requests such as “不要生图”, “只搜图” or “use stock images only” throughout
-the task. The plugin does not run generation itself or configure API keys, and
-the canvas has no generation switch. Unavailable/failed generation falls back to
-stock search, with a clear note; never silently switch providers, call a separate
-paid API, or retry an uncertain generation. Reuse successful assets after an
-import/save failure instead of generating them again.
-If the brief requires exact generated content and stock would change that intent,
-explain the gap rather than claiming the stock image satisfies it.
+Honor requests such as “不要生图”, “只搜图” or “use stock images only”
+throughout the task. The connector does not run generation itself or configure
+API keys, and the canvas has no generation switch. Unavailable or failed
+generation falls back to scoped native stock search, with a clear note; never
+silently switch providers, call a separate paid API, or retry an uncertain
+generation. Reuse successful assets after an import/save failure instead of
+generating them again. If the brief requires exact generated content and stock
+would change that intent, explain the gap rather than claiming the stock image
+satisfies it.
 
-For image slots, search fallback and local-asset import, read the
+Generated images are saved as local files in the design project first, then
+imported into the canvas with `canvas_import_image` (local raster, at most
+8 MiB). Keep the originals in the project, inspect the native preview, save the
+`.op` and verify portable image data on reopen. For image slots, search fallback
+and local-asset import, read the
 [image workflow](references/images.md). Images are assets within editable UI;
 keep text, controls and layout as native nodes.
 
@@ -72,7 +77,7 @@ limit edits to those nodes and their descendants. An empty selection is not a
 request to edit the whole page: ask the user to select a target. For a desktop
 editor without a managed canvas, use `get_editor_state` and read its selection.
 
-Use the current Codex chat for instructions, progress and results. The canvas
+Use the current WorkBuddy chat for instructions, progress and results. The canvas
 only shows selection status and synchronizes context; it has no prompt input or
 edit-request lifecycle. Do not ask the user to copy internal IDs. Treat host
 selection context as a hint and verify it with `canvas_selection` when starting

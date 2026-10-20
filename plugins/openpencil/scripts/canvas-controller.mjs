@@ -11,12 +11,12 @@ export const CANVAS_URI = 'ui://openpencil/canvas/v0.3.13.html';
 const schema = properties => ({ type: 'object', properties, additionalProperties: false });
 const filePath = { type: 'string', description: 'Absolute .op path; omit to create or reopen this session’s canvas.' };
 export const canvasTools = [
-  { name: 'open_canvas', title: 'OpenPencil Canvas', description: 'Open the editable Rust canvas entrypoint: embedded canvas where allowed, or a browser launcher in restricted hosts such as Codex. Optional filePath loads an existing .op into an isolated managed session. All subsequent OpenPencil tools target this canvas until the bridge closes. Omit the path for a new document. Returns the same local panel URL as canvas_open_browser.',
+  { name: 'open_canvas', title: 'OpenPencil Canvas', description: 'Open the editable Rust canvas entrypoint: embedded canvas where allowed, or a browser launcher in restricted hosts. Optional filePath loads an existing .op into an isolated managed session. All subsequent OpenPencil tools target this canvas until the bridge closes. Omit the path for a new document. Returns the same local panel URL as canvas_open_browser.',
     inputSchema: schema({ filePath }), annotations: { destructiveHint: false, openWorldHint: false },
     _meta: { ui: { resourceUri: CANVAS_URI }, 'openai/ui': { entrypoints: [{ type: 'thread' }] } } },
-  { name: 'canvas_open_browser', description: 'Open or reconnect this chat’s managed editable canvas and return its local panelUrl. Show this URL in the Codex built-in browser with open_in_codex (browser target) or @Browser. Preserve any supplied theme/launch fragment. Use an external browser only when the user explicitly requests it. Use this when the host hides the open_canvas UI entrypoint or cannot embed local HTTP frames. All subsequent OpenPencil tools target this same canvas.',
+  { name: 'canvas_open_browser', description: 'Open or reconnect this chat’s managed editable canvas and return its local panelUrl. Show this URL with the WorkBuddy built-in browser preview (present the localhost URL) or the user’s current browser. Preserve any supplied theme/launch fragment. Use an external browser only when the user explicitly requests it. Use this when the host hides the open_canvas UI entrypoint or cannot embed local HTTP frames. All subsequent OpenPencil tools target this same canvas.',
     inputSchema: schema({ filePath }), annotations: { destructiveHint: false, openWorldHint: false } },
-  { name: 'canvas_prepare_browser', description: 'Prepare this conversation’s existing canvas URL and short-lived ready receipt for opening through the current Codex chat. Does not launch a browser or send a message. Never accepts a URL or file path; the host controls in-app browser navigation.',
+  { name: 'canvas_prepare_browser', description: 'Prepare this conversation’s existing canvas URL and short-lived ready receipt for opening through the current WorkBuddy chat. Does not launch a browser or send a message. Never accepts a URL or file path; the host controls in-app browser navigation.',
     inputSchema: { ...schema({ theme: { type: 'string', enum: ['light', 'dark'] } }), required: ['theme'] },
     annotations: { destructiveHint: false, openWorldHint: false }, _meta: { ui: { visibility: ['app'] } } },
   { name: 'canvas_launch_status', description: 'Read whether the browser canvas for this launch has actually connected.',
@@ -114,7 +114,7 @@ export class CanvasController {
       const upstream = this.session ? await this.session.forward(message) : await forward(message, this.options);
       if (!Object.hasOwn(message, 'id')) return null;
       if (message.method === 'initialize') {
-        const result = upstream?.result || { protocolVersion: message.params?.protocolVersion || '2025-11-25', serverInfo: { name: 'codex-openpencil', version: '0.3.13' } };
+        const result = upstream?.result || { protocolVersion: message.params?.protocolVersion || '2025-11-25', serverInfo: { name: 'workbuddy-openpencil', version: '0.3.13-wb.1' } };
         result.capabilities = { ...result.capabilities, tools: { listChanged: true }, resources: {} };
         return reply(result);
       }

@@ -8,3 +8,9 @@ MIT-licensed Rust OpenPencil engine and DSH OpenPencil integration by ZSeven-W.
 The runtime is configured separately, not redistributed in this plugin.
 
 This is an independent OpenPencil integration, not an OpenAI-authored plugin.
+
+WorkBuddy-openpencil fork (2026): maintained as an independent WorkBuddy
+connector adaptation of ZSeven-W/codex-openpencil (MIT). Registration targets
+WorkBuddy's custom MCP connector configuration; image generation uses the
+host's built-in image model instead of Codex image_gen. All original MIT
+license notices and third-party attributions above are preserved.

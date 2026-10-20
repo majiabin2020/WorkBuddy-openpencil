@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createUiHarness, initializeApp, openPanel } from './ui-harness.mjs';
 
 const notification = theme => ({ jsonrpc: '2.0', method: 'ui/notifications/host-context-changed', params: { theme } });
-const panelTheme = colorScheme => ({ type: 'codex-canvas/theme', colorScheme });
+const panelTheme = colorScheme => ({ type: 'wb-canvas/theme', colorScheme });
 
 test('Host theme reaches the panel on first navigation and changes without reloading it', async () => {
   const app = await createUiHarness('app');
@@ -33,10 +33,10 @@ test('Wrapper accepts host context and panel-ready only from their expected wind
   app.window.emit('message', { source: {}, origin: 'https://host.example', data: notification('dark') });
   assert.equal(app.theme(), 'light');
   const before = app.frameMessages.length;
-  app.window.emit('message', { source: {}, origin: new URL(url).origin, data: { type: 'codex-canvas/ready' } });
-  app.window.emit('message', { source: app.frame.contentWindow, origin: 'https://foreign.example', data: { type: 'codex-canvas/ready' } });
+  app.window.emit('message', { source: {}, origin: new URL(url).origin, data: { type: 'wb-canvas/ready' } });
+  app.window.emit('message', { source: app.frame.contentWindow, origin: 'https://foreign.example', data: { type: 'wb-canvas/ready' } });
   assert.equal(app.frameMessages.length, before);
-  app.window.emit('message', { source: app.frame.contentWindow, origin: new URL(url).origin, data: { type: 'codex-canvas/ready' } });
+  app.window.emit('message', { source: app.frame.contentWindow, origin: new URL(url).origin, data: { type: 'wb-canvas/ready' } });
   assert.equal(app.frameMessages.at(-1).data.colorScheme, 'light');
 });
 
@@ -67,7 +67,7 @@ test('Embedded panel seeds from host theme and resends the latest theme after ed
   const panel = await createUiHarness('panel', { hash: '#theme=dark' });
   assert.equal(panel.theme(), 'dark');
   assert.equal(new URL(panel.frame.src).searchParams.get('theme'), 'dark');
-  assert.ok(panel.hostMessages.some(item => item.data.type === 'codex-canvas/ready'));
+  assert.ok(panel.hostMessages.some(item => item.data.type === 'wb-canvas/ready'));
   panel.host(panelTheme('light'));
   panel.editor({ type: 'op-bridge/listening' });
   assert.equal(panel.editorMessages.at(-2).type, 'op-bridge/init');

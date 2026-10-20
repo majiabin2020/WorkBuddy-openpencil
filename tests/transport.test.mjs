@@ -30,7 +30,7 @@ async function server(t, responder) {
 }
 
 async function record(t, value) {
-  const dir = await mkdtemp(join(tmpdir(), 'codex-openpencil-test-'));
+  const dir = await mkdtemp(join(tmpdir(), 'workbuddy-openpencil-test-'));
   t.after(() => rm(dir, { recursive: true, force: true }));
   const file = join(dir, 'discovery');
   await writeFile(file, JSON.stringify(value));

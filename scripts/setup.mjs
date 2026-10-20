@@ -1,13 +1,13 @@
-import { mkdir, mkdtemp, writeFile, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ensureRuntime, installRuntime } from '../plugins/openpencil/scripts/runtime-install.mjs';
 import { CanvasController } from '../plugins/openpencil/scripts/canvas-controller.mjs';
 import { EditorSession } from '../plugins/openpencil/scripts/editor-session.mjs';
-import { runCodex } from './codex-command.mjs';
 import { registerNode } from './node-registration.mjs';
-import { verifyPluginHost } from './plugin-host-check.mjs';
+import { registerWorkbuddyMcp } from './workbuddy-registration.mjs';
+import { verifyWorkbuddyRegistration } from './plugin-host-check.mjs';
 
 const args = process.argv.slice(2);
 if (args.some(arg => !['--runtime-only', '--repair-runtime'].includes(arg))) {
@@ -42,24 +42,20 @@ export async function verifyRuntime(runtimeRoot) {
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    if (!args.includes('--runtime-only')) {
-      if (process.env.CODEX_HOME) await mkdir(resolve(process.env.CODEX_HOME), { recursive: true, mode: 0o700 });
-      runCodex(['plugin', 'add', '--help'], { cwd: root, quiet: true });
-    }
-    // Acquire and verify before registering the plugin; an interrupted download
-    // must not leave an apparently ready plugin with no usable editor.
+    // Acquire and verify before registering the connector; an interrupted download
+    // must not leave an apparently ready connector with no usable editor.
     const runtime = args.includes('--repair-runtime') ? await installRuntime() : await ensureRuntime();
     await verifyRuntime(runtime.root);
-    let pluginHost;
+    let registration;
+    let hostCheck;
     if (!args.includes('--runtime-only')) {
       await registerNode();
-      runCodex(['plugin', 'marketplace', 'add', root], { cwd: root });
-      runCodex(['plugin', 'add', 'openpencil@zseven-openpencil'], { cwd: root });
-      pluginHost = await verifyPluginHost();
+      registration = await registerWorkbuddyMcp({ root });
+      hostCheck = await verifyWorkbuddyRegistration();
     }
     console.log(JSON.stringify({ ok: true, runtime: runtime.version, platform: `${process.platform}-${process.arch}`,
-      verified: ['panel', 'native-edit', 'save', 'reopen'], pluginInstalled: !args.includes('--runtime-only'),
-      pluginHost,
-      next: 'Call canvas_open_browser and show its panelUrl in the Codex browser panel. Otherwise run npm run canvas in a persistent terminal to use the canvas now; reconnect the plugin or start a new chat to load its tools.' }, null, 2));
-  } catch (error) { console.error(`OpenPencil setup failed: ${error.message}`); process.exitCode = 1; }
+      verified: ['panel', 'native-edit', 'save', 'reopen'], registered: !args.includes('--runtime-only'),
+      registration, hostCheck,
+      next: 'Open WorkBuddy connector management, find the custom MCP server "workbuddy_openpencil" and click Trust, then restart the conversation so the canvas tools load. In a chat, ask for a canvas and open the returned panelUrl with the built-in browser preview. Without WorkBuddy, run npm run canvas in a persistent terminal to use the canvas now.' }, null, 2));
+  } catch (error) { console.error(`WorkBuddy OpenPencil setup failed: ${error.message}`); process.exitCode = 1; }
 }

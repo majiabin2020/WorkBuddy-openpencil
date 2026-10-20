@@ -79,7 +79,7 @@ try {
     for (const call of pending.values()) { clearTimeout(call.timer); call.reject(new Error(`Bridge exited: ${bridgeLog}`)); }
     pending.clear();
   });
-  const initialized = await rpc('initialize', { protocolVersion: '2024-11-05', capabilities: {}, clientInfo: { name: 'codex-openpencil-smoke', version: '0.1.0' } });
+  const initialized = await rpc('initialize', { protocolVersion: '2024-11-05', capabilities: {}, clientInfo: { name: 'workbuddy-openpencil-smoke', version: '0.1.0' } });
   bridge.stdin.write(JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' }) + '\n');
   const tools = await rpc('tools/list', {});
   const before = content(await tool('get_editor_state'));

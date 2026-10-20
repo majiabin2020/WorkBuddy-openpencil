@@ -66,7 +66,7 @@ export async function fetchRuntime(input, { signal, env, platform, systemProxy, 
     agent.createConnection = (_options, callback) => { tunnel(url, proxy, signal).then(socket => callback(null, socket), callback); };
   }
   const response = await new Promise((resolve, reject) => {
-    const request = https.get(url, { agent, signal, headers: { 'User-Agent': 'codex-openpencil-runtime', Accept: 'application/octet-stream' } }, resolve);
+    const request = https.get(url, { agent, signal, headers: { 'User-Agent': 'workbuddy-openpencil-runtime', Accept: 'application/octet-stream' } }, resolve);
     request.setTimeout(30_000, () => request.destroy(new Error('Runtime download stalled.')));
     request.once('error', reject);
   });

@@ -11,7 +11,7 @@ if (![options.runtime, options.output].every(value => typeof value === 'string' 
 }
 await mkdir(options.output, { recursive: true });
 const output = await mkdtemp(join(options.output, 'run-'));
-process.env.OPENPENCIL_CODEX_STATE_DIR = join(output, 'state');
+process.env.OPENPENCIL_STATE_DIR = join(output, 'state');
 const filePath = join(output, 'images.op'), asset = join(output, 'local-asset.png');
 const query = options.query || 'alpine mountain lake forest reflections landscape';
 await copyFile(new URL('../plugins/openpencil/assets/icon.png', import.meta.url), asset);

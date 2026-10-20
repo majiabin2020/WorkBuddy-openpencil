@@ -2,7 +2,7 @@
 # GUI hosts may not inherit the terminal's Node version-manager PATH.
 set -eu
 script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-state_dir="$HOME/.codex-openpencil"
+state_dir="$HOME/.workbuddy-openpencil"
 node_bin=
 if [ -f "$state_dir/node-path" ]; then
   IFS= read -r node_bin < "$state_dir/node-path" || true

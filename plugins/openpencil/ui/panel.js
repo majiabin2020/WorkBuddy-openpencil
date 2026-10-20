@@ -43,7 +43,7 @@ function applyTheme() {
   sendTheme();
 }
 function notifyParentReady() {
-  if (window.parent !== window) window.parent.postMessage({ type:'codex-canvas/ready' }, parentOrigin && parentOrigin !== 'null' ? parentOrigin : '*');
+  if (window.parent !== window) window.parent.postMessage({ type:'wb-canvas/ready' }, parentOrigin && parentOrigin !== 'null' ? parentOrigin : '*');
 }
 function initialize() {
   send({ type: 'op-bridge/init', token: grant.token });
@@ -94,7 +94,7 @@ function checkpointSoon() {
   checkpointTimer = setTimeout(() => { checkpointTimer = undefined; if (!saving && ready) rpc('canvas_checkpoint').then(() => clearError('checkpoint')).catch(error => fail(error, 'checkpoint')); }, 1000);
 }
 window.addEventListener('message', event => {
-  if (window.parent !== window && event.source === window.parent && event.data?.type === 'codex-canvas/theme') {
+  if (window.parent !== window && event.source === window.parent && event.data?.type === 'wb-canvas/theme') {
     if (parentOrigin !== undefined && event.origin !== parentOrigin) return;
     if (validTheme(event.data.colorScheme)) {
       parentOrigin = event.origin;
@@ -156,11 +156,11 @@ async function refreshCanvas() {
     if (connectionInterrupted) { connectionInterrupted = false; restoreStatus(); }
     if (savedVersion === null) savedVersion = result.version;
     else if (result.version !== savedVersion) { dirty = true; restoreStatus(); checkpointSoon(); }
-    if (window.parent !== window) window.parent.postMessage({ type: 'codex-canvas/context', filePath: source, selection: result.selection }, parentOrigin && parentOrigin !== 'null' ? parentOrigin : '*');
+    if (window.parent !== window) window.parent.postMessage({ type: 'wb-canvas/context', filePath: source, selection: result.selection }, parentOrigin && parentOrigin !== 'null' ? parentOrigin : '*');
   } catch (error) {
     selectionReadFailed(error);
     if (!isSelectionReadError(error)) { connectionInterrupted = true; fail(error, 'connection'); restoreStatus(); }
-    if (window.parent !== window) window.parent.postMessage({ type: 'codex-canvas/context', filePath: source, selection: null }, parentOrigin && parentOrigin !== 'null' ? parentOrigin : '*');
+    if (window.parent !== window) window.parent.postMessage({ type: 'wb-canvas/context', filePath: source, selection: null }, parentOrigin && parentOrigin !== 'null' ? parentOrigin : '*');
   }
   finally { refreshingCanvas = false; }
 }

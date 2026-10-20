@@ -17,7 +17,7 @@ await mkdir(options.output, { recursive: true });
 const output = await mkdtemp(join(options.output, 'run-'));
 // Keep drafts and runtime settings inside this run. Never read or write the
 // user's global runtime configuration, discovery record, or live document.
-process.env.OPENPENCIL_CODEX_STATE_DIR = join(output, 'state');
+process.env.OPENPENCIL_STATE_DIR = join(output, 'state');
 let requestId = 0;
 const sessions = new Set();
 const cases = [

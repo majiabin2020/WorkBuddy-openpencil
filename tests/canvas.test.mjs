@@ -10,7 +10,7 @@ import { snapshotMatches, diskDocument } from '../plugins/openpencil/scripts/doc
 import { createUiHarness, initializeApp, openPanel } from './ui-harness.mjs';
 
 const document = name => JSON.stringify({ version: '0.8.5', children: [{ type: 'frame', id: 'one', name }] });
-async function dir(t) { const path = await mkdtemp(join(tmpdir(), 'codex-canvas-')); t.after(() => rm(path, { recursive: true, force: true })); return path; }
+async function dir(t) { const path = await mkdtemp(join(tmpdir(), 'wb-canvas-')); t.after(() => rm(path, { recursive: true, force: true })); return path; }
 
 test('Flushed disk snapshots match inline images and metadata without masking stale edits or free-form data', () => {
   const live = { document: { version: '0.8.5', children: [{ type: 'image', src: 'data:image/png;base64,test',
@@ -119,9 +119,9 @@ test('MCP Apps handshake opens the panel and accepts selection only from the exa
   assert.equal(ui.frame.src, url + '#theme=light');
   assert.equal(ui.frame.hidden, false);
   const count = ui.hostMessages.length;
-  ui.window.emit('message', {source:ui.frame.contentWindow,origin:'https://foreign.example',data:{type:'codex-canvas/context'}});
+  ui.window.emit('message', {source:ui.frame.contentWindow,origin:'https://foreign.example',data:{type:'wb-canvas/context'}});
   assert.equal(ui.hostMessages.length, count);
-  ui.window.emit('message', {source:ui.frame.contentWindow,origin:'http://127.0.0.1:1234',data:{type:'codex-canvas/context',filePath:'/design.op',selection:['one']}});
+  ui.window.emit('message', {source:ui.frame.contentWindow,origin:'http://127.0.0.1:1234',data:{type:'wb-canvas/context',filePath:'/design.op',selection:['one']}});
   const update = ui.hostMessages.at(-1).data;
   assert.equal(update.method, 'ui/update-model-context');
   assert.match(update.params.content[0].text, /design.op/);

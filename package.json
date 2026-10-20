@@ -1,8 +1,8 @@
 {
-  "name": "@zseven-w/codex-openpencil",
-  "version": "0.3.13",
+  "name": "workbuddy-openpencil",
+  "version": "0.3.13-wb.1",
   "private": true,
-  "description": "OpenPencil design workflows and a local MCP bridge for Codex",
+  "description": "OpenPencil design workflows and a local MCP bridge for WorkBuddy",
   "type": "module",
   "license": "MIT",
   "engines": {

@@ -10,7 +10,7 @@ if (![options.runtime,options.output].every(value=>typeof value==='string' && is
 }
 await mkdir(options.output,{recursive:true});
 const output = await mkdtemp(join(options.output,'run-'));
-process.env.OPENPENCIL_CODEX_STATE_DIR = join(output,'state');
+process.env.OPENPENCIL_STATE_DIR = join(output,'state');
 const filePath = join(output,'selection-test.op');
 const fill = color => [{type:'solid',color}];
 const text = (id,name,content,x) => ({id,name,type:'text',x,y:34,width:232,height:42,fontFamily:'DM Sans',fontSize:26,fontWeight:600,content,fill:fill('#25271F')});

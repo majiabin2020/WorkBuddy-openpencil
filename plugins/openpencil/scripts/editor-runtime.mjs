@@ -3,7 +3,7 @@ import { readFile, lstat, realpath } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join, resolve, relative, isAbsolute } from 'node:path';
 
-export const stateRoot = () => process.env.OPENPENCIL_CODEX_STATE_DIR || join(homedir(), '.codex-openpencil');
+export const stateRoot = () => process.env.OPENPENCIL_STATE_DIR || join(homedir(), '.workbuddy-openpencil');
 export const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
 
 export async function resolveRuntime(root) {

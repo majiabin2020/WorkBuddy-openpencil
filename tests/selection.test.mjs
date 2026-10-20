@@ -84,7 +84,7 @@ test('Selection context is synchronized, deduplicated and cleared without sendin
   const app = await createUiHarness('app');
   await initializeApp(app,'light',{serverTools:{},message:{text:{}},updateModelContext:{text:{}}});
   const url = await openPanel(app);
-  const value = {type:'codex-canvas/context',filePath:'/design.op',selection:selection(['title'])};
+  const value = {type:'wb-canvas/context',filePath:'/design.op',selection:selection(['title'])};
   panelMessage(app,url,value); panelMessage(app,url,value);
   const updates = () => app.hostMessages.filter(item=>item.data.method==='ui/update-model-context');
   assert.equal(updates().length,1);
@@ -94,7 +94,7 @@ test('Selection context is synchronized, deduplicated and cleared without sendin
   panelMessage(app,url,{...value,selection:null});
   assert.equal(updates().length,3);
   assert.equal(JSON.parse(updates()[2].data.params.content[0].text).selection,null);
-  panelMessage(app,url,{type:'codex-canvas/prompt',requestId:'obsolete',message:'Change'});
+  panelMessage(app,url,{type:'wb-canvas/prompt',requestId:'obsolete',message:'Change'});
   await settle();
   assert.ok(!app.hostMessages.some(item=>item.data.method==='ui/message'));
 });
@@ -102,7 +102,7 @@ test('Selection context is synchronized, deduplicated and cleared without sendin
 test('Failed context updates can resynchronize, while unsupported hosts send no context', async () => {
   const app = await createUiHarness('app'); await initializeApp(app,'light');
   const url = await openPanel(app);
-  const value = {type:'codex-canvas/context',filePath:'/design.op',selection:selection(['title'])};
+  const value = {type:'wb-canvas/context',filePath:'/design.op',selection:selection(['title'])};
   panelMessage(app,url,value);
   const first = app.hostMessages.at(-1).data;
   app.host({jsonrpc:'2.0',id:first.id,error:{message:'Unavailable'}}); await settle();
@@ -133,7 +133,7 @@ test('Selection reminder follows single, multiple and cleared targets without an
     assert.equal(ui.element('selection-label').textContent,'未选中元素');
     assert.equal(ui.editorMessages.filter(item=>item.type==='op-bridge/snapshot').length,0);
     assert.ok(ui.rpcCalls.every(item=>JSON.parse(item.options.body).name==='canvas_status'));
-    assert.ok(!ui.hostMessages.some(item=>item.data.type==='codex-canvas/prompt'));
+    assert.ok(!ui.hostMessages.some(item=>item.data.type==='wb-canvas/prompt'));
   }
 });
 

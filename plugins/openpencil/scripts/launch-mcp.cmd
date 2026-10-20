@@ -1,7 +1,7 @@
 @echo off
 setlocal DisableDelayedExpansion
 rem Resolve the same private Node registration as the POSIX launcher.
-set "state_dir=%USERPROFILE%\.codex-openpencil"
+set "state_dir=%USERPROFILE%\.workbuddy-openpencil"
 set "node_bin="
 if exist "%state_dir%\node-path" set /p "node_bin=" < "%state_dir%\node-path"
 if not defined node_bin goto path_node

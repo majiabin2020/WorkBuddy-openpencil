@@ -1,6 +1,6 @@
 {
-  "name": "zseven-openpencil",
-  "interface": { "displayName": "ZSeven · OpenPencil" },
+  "name": "workbuddy-openpencil",
+  "interface": { "displayName": "WorkBuddy · OpenPencil" },
   "plugins": [
     {
       "name": "openpencil",

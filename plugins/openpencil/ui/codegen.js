@@ -15,15 +15,15 @@ async function generateCode(value) {
       pageId: value.pageId, nodeIds: value.nodeIds, docJson: snapshot.docJson });
     if (codegenActive !== value.requestId) { await rpc('canvas_codegen_cancel', { uiRequestId: value.requestId }); return; }
     codegenRequest = job; codegenRevision = job.revision;
-    codegenReply(value.requestId, { code: job.code, notice: '在 Codex 说“继续转代码”' });
+    codegenReply(value.requestId, { code: job.code, notice: '在 WorkBuddy 聊天说“继续转代码”' });
     if (window.parent !== window) {
       const timer = setTimeout(() => {
         codegenHandoffs.delete(job.requestId);
         if (codegenRequest?.requestId !== job.requestId || codegenRequest.status === 'complete') return;
-        codegenReply(job.uiRequestId, { notice: '投递未确认 · 请检查 Codex 对话' });
+        codegenReply(job.uiRequestId, { notice: '投递未确认 · 请检查 WorkBuddy 聊天' });
       }, 22_000);
       codegenHandoffs.set(job.requestId, { timer, job });
-      window.parent.postMessage({ type: 'codex-canvas/codegen', requestId: job.requestId, prompt: job.prompt }, parentOrigin && parentOrigin !== 'null' ? parentOrigin : '*');
+      window.parent.postMessage({ type: 'wb-canvas/codegen', requestId: job.requestId, prompt: job.prompt }, parentOrigin && parentOrigin !== 'null' ? parentOrigin : '*');
     }
   } catch (error) { if (codegenActive === value.requestId) codegenReply(value.requestId, { error: error.message }); }
 }
@@ -39,15 +39,15 @@ window.addEventListener('message', event => {
     if (value.type === 'op-bridge/codegen-request') void generateCode(value);
     return;
   }
-  if (window.parent === window || event.source !== window.parent || event.data?.type !== 'codex-canvas/codegen-result') return;
+  if (window.parent === window || event.source !== window.parent || event.data?.type !== 'wb-canvas/codegen-result') return;
   if (parentOrigin !== undefined && event.origin !== parentOrigin) return;
   const pending = codegenHandoffs.get(event.data.requestId);
   if (!pending) return;
   clearTimeout(pending.timer); codegenHandoffs.delete(event.data.requestId);
   if (codegenRequest?.requestId !== pending.job.requestId || codegenRequest.status === 'complete') return;
-  const notice = event.data.status === 'accepted' ? '已交给 Codex 继续实现'
-    : event.data.status === 'unsupported' ? '在 Codex 说“继续转代码”'
-    : '投递未确认 · 请检查 Codex 对话';
+  const notice = event.data.status === 'accepted' ? '已交给 WorkBuddy 继续实现'
+    : event.data.status === 'unsupported' ? '在 WorkBuddy 聊天说“继续转代码”'
+    : '投递未确认 · 请检查 WorkBuddy 聊天';
   codegenReply(pending.job.uiRequestId, { notice });
 });
 
@@ -58,7 +58,7 @@ async function refreshCodegen() {
     const job = await rpc('canvas_codegen_poll', { afterRevision: codegenRevision });
     if (!job || job.requestId !== codegenRequest.requestId) return;
     codegenRevision = job.revision; codegenRequest = job;
-    codegenReply(job.uiRequestId, { code: job.code, notice: job.status === 'complete' ? 'Codex 已回填 · 项目见对话' : '基础代码预览' });
+    codegenReply(job.uiRequestId, { code: job.code, notice: job.status === 'complete' ? 'WorkBuddy 已回填 · 项目见对话' : '基础代码预览' });
   } catch { /* Preserve the last usable source; reconnect does not replay a chat message. */ }
   finally { codegenPolling = false; }
 }
