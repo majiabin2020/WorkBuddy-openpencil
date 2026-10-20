@@ -50,7 +50,7 @@
 也可以手动安装：
 
 ```sh
-git clone https://github.com/你的账号/WorkBuddy-openpencil.git
+git clone https://github.com/majiabin2020/WorkBuddy-openpencil.git
 cd WorkBuddy-openpencil
 npm run setup
 ```

@@ -2,7 +2,7 @@
 
 把下面这段话发给 WorkBuddy（把示例换成你自己的设计需求）：
 
-> 按照 https://github.com/你的账号/WorkBuddy-openpencil 的 INSTALL.md 帮我安装并配置 OpenPencil，打开可编辑画布，做一个单页手机任务管理 APP。
+> 按照 https://github.com/majiabin2020/WorkBuddy-openpencil 的 INSTALL.md 帮我安装并配置 OpenPencil，打开可编辑画布，做一个单页手机任务管理 APP。
 
 ## 给安装代理（AI 助手）的指令
 
@@ -12,7 +12,7 @@
 2. 用 HTTPS 把仓库克隆到一个持久的、用户拥有的位置。不要覆盖别的 checkout，也不要装进临时目录。已有 checkout 时先看本地改动再更新。
 
    ```sh
-   git clone https://github.com/你的账号/WorkBuddy-openpencil.git
+   git clone https://github.com/majiabin2020/WorkBuddy-openpencil.git
    cd WorkBuddy-openpencil
    npm run setup
    ```
