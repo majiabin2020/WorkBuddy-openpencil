@@ -4,9 +4,14 @@ import { isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { randomUUID } from 'node:crypto';
 
+const repoRoot = () => resolve(fileURLToPath(new URL('../', import.meta.url)));
+
 export const SERVER_NAME = 'workbuddy_openpencil';
 export const CONFIG_PATH = () => process.env.WORKBUDDY_MCP_CONFIG || join(homedir(), '.workbuddy', 'mcp.json');
-const pluginRoot = () => resolve(fileURLToPath(new URL('../plugins/openpencil/', import.meta.url)));
+// `root` is the repository root; the launcher lives under plugins/openpencil.
+const launcherPath = root => join(root, 'plugins', 'openpencil', 'scripts',
+  process.platform === 'win32' ? 'launch-mcp.cmd' : 'launch-mcp');
+const pluginCwd = root => join(root, 'plugins', 'openpencil');
 
 // Read the current registration without throwing when the file or entry is
 // absent; a corrupt config is surfaced as an explicit error so setup never
@@ -26,9 +31,9 @@ export async function readRegistration(configPath = CONFIG_PATH()) {
 // Merge-only write: existing servers and unknown keys are preserved verbatim.
 // The entry points at the portable launcher so Node version selection stays
 // identical to what the host would otherwise resolve.
-export async function registerWorkbuddyMcp({ configPath = CONFIG_PATH(), root = pluginRoot() } = {}) {
-  if (!isAbsolute(root)) throw new Error('Plugin root must be an absolute path.');
-  const launcher = join(root, 'scripts', process.platform === 'win32' ? 'launch-mcp.cmd' : 'launch-mcp');
+export async function registerWorkbuddyMcp({ configPath = CONFIG_PATH(), root = repoRoot() } = {}) {
+  if (!isAbsolute(root)) throw new Error('Repository root must be an absolute path.');
+  const launcher = launcherPath(root);
   let parsed = {};
   try {
     parsed = JSON.parse(await readFile(configPath, 'utf8'));
@@ -42,12 +47,12 @@ export async function registerWorkbuddyMcp({ configPath = CONFIG_PATH(), root = 
     }
   }
   if (typeof parsed.mcpServers !== 'object' || parsed.mcpServers === null || Array.isArray(parsed.mcpServers)) parsed.mcpServers = {};
-  parsed.mcpServers[SERVER_NAME] = { command: launcher, args: [], cwd: root };
+  parsed.mcpServers[SERVER_NAME] = { command: launcher, args: [], cwd: pluginCwd(root) };
   const temporary = join(configPath, `..`, `.mcp-${randomUUID()}.tmp`);
   await writeFile(temporary, `${JSON.stringify(parsed, null, 2)}\n`, { flag: 'wx' });
   await rename(temporary, configPath).catch(async error => {
     await rm(temporary, { force: true });
     throw error;
   });
-  return { ok: true, server: SERVER_NAME, configPath, command: launcher, cwd: root };
+  return { ok: true, server: SERVER_NAME, configPath, command: launcher, cwd: pluginCwd(root) };
 }
