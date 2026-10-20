@@ -43,8 +43,18 @@ npm run setup          # acquire runtime, register the WorkBuddy connector, veri
 npm run host-check     # verify the registered entry and canvas tool catalog
 npm run doctor         # diagnose a connection to an existing desktop editor
 npm run canvas         # persistent-terminal canvas entry point
+npm run demo           # keep one interactive demo canvas alive (--file to load a .op)
 npm test               # full regression suite
 ```
+
+## Scripting the canvas from agents
+
+- [docs/agent-scripting.md](./docs/agent-scripting.md) — field guide: session
+  plumbing, the `design_skeleton`/`batch_design` build protocol, the generated
+  image import recipe, QA without eyes, and a pitfalls table.
+- [scripts/canvas-driver.mjs](./scripts/canvas-driver.mjs) — shared driver
+  helper; [examples/dogfood-detail-page.mjs](./examples/dogfood-detail-page.mjs)
+  is a complete reproducible example.
 
 ## Acknowledgements
 

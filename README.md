@@ -85,7 +85,20 @@ npm run setup          # 安装运行时、注册 WorkBuddy 连接器并校验
 npm run host-check     # 校验注册条目与画布工具目录（真实 MCP 握手）
 npm run doctor         # 诊断与已有桌面编辑器的连接
 npm run canvas         # 持久终端入口：不开 WorkBuddy 也能用画布
+npm run demo           # 打开/保持一块可交互演示画布（--file 指定 .op）
 npm test               # 全部回归测试
+```
+
+## Agent 脚本驱动画布
+
+想在对话外用脚本批量建设计（比如 AI 代理自动出图）？看这两份：
+
+- [docs/agent-scripting.md](./docs/agent-scripting.md)——实战手册：会话管理、`design_skeleton`/`batch_design` 构建协议、生图导入配方、无目检 QA 和踩坑对照表；
+- [scripts/canvas-driver.mjs](./scripts/canvas-driver.mjs)——通用驱动助手（工具返回归一化、坐标读取、截图落盘）；
+- [examples/dogfood-detail-page.mjs](./examples/dogfood-detail-page.mjs)——完整可复现示例（本 README 顶图对应的详情页就是它建的）：
+
+```sh
+node examples/dogfood-detail-page.mjs --file /abs/design.op --image /abs/hero.png
 ```
 
 ## 致谢与来源
