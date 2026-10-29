@@ -13,6 +13,7 @@
     "check": "node scripts/check-package.mjs",
     "doctor": "node plugins/openpencil/scripts/mcp-bridge.mjs --doctor",
     "host-check": "node scripts/plugin-host-check.mjs",
+    "align-check": "node scripts/align-check.mjs",
     "configure-runtime": "node scripts/configure-runtime.mjs",
     "canvas-smoke": "node scripts/canvas-smoke.mjs",
     "selection-smoke": "node scripts/selection-smoke.mjs",

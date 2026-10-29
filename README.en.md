@@ -41,6 +41,7 @@ See the [Chinese README](./README.zh.md) for the full guide, or
 ```sh
 npm run setup          # acquire runtime, register the WorkBuddy connector, verify
 npm run host-check     # verify the registered entry and canvas tool catalog
+npm run align-check -- file.op [--fix]  # cross-column heading baseline check/fix (offline, keeps a backup)
 npm run doctor         # diagnose a connection to an existing desktop editor
 npm run canvas         # persistent-terminal canvas entry point
 npm run demo           # keep one interactive demo canvas alive (--file to load a .op)

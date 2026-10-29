@@ -106,6 +106,13 @@ completion.
 - Use horizontal/vertical layout, padding, gap, and container sizing deliberately.
   For repeated cards in a row, use consistent `fill_container` widths.
   Absolute x/y coordinates on children do not replace a proper flow layout.
+- Keep same-level headings on one global baseline across side-by-side section
+  frames: when the design has several numbered section boards, compute each
+  section's topmost `subheading｜` heading position through the parent chain
+  (sum y along ancestors) and give every section the same global y. Sections
+  are laid out independently and drift silently without this check; verify the
+  saved document offline with `node scripts/align-check.mjs <file.op>` (add
+  `--fix` to repair, it keeps a backup) before reporting completion.
 - Use `design_refine` on the affected root when appropriate, then inspect the
   returned changes. A successful refine is not visual acceptance.
   After structural repair or `finalize_design`, reread `get_editor_state` and

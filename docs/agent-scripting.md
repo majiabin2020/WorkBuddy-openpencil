@@ -62,6 +62,24 @@ complete worked example.
 - Confirm the saved document byte size roughly accounts for the embedded
   image (~1.6MB image ⇒ ~2.2MB document).
 
+## Cross-column heading alignment
+
+Multi-section boards (numbered top-level frames like `01 时空长轴`) are laid
+out independently, so each section's first heading drifts to a different
+global y — the structure tree is NOT the cause and must not be flattened.
+Alignment is pure coordinate arithmetic: global y = sum of y along the parent
+chain; shift the heading and everything below it back by the difference.
+
+- `node scripts/align-check.mjs <file.op>` reports per-section global heading
+  y against the first section's baseline (exit 1 when misaligned).
+- `--fix` aligns every section to the baseline (or `--target <y>`), shifting
+  the topmost `subheading｜` heading and all content below it; transparent
+  `group` containers (no own x/y) have qualifying children shifted in place.
+  A `.align-backup-<ts>.op` copy is kept next to the file.
+- Unit note: the test document uses 1 unit = 1 mm and the full-canvas
+  screenshot renders 1 px = 1 mm, so coordinate deltas are directly measurable
+  in pixel space (verify with Pillow/numpy row profiles before/after).
+
 ## Known pitfalls
 
 | Symptom | Cause / fix |
