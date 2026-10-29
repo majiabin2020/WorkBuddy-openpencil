@@ -59,6 +59,14 @@ export class CanvasController {
   async ensurePanel() { if (!this.panel) this.panel = await startPanel(this); return this.panel; }
   async open({ filePath } = {}) {
     const panel = await this.ensurePanel();
+    // A dead runtime must not brick the conversation: reopen from the recovery
+    // draft so unsaved work survives, unless the caller explicitly names a file.
+    if (this.session?.closed) {
+      const draft = this.session.draft;
+      const source = this.session.source;
+      this.session = null;
+      if (!filePath || filePath === source) return this.open({ filePath: draft });
+    }
     if (this.session && filePath && filePath !== this.session.source && filePath !== this.session.draft) {
       throw new Error('This conversation already has a canvas. Save it, then open the other document in a new conversation.');
     }
